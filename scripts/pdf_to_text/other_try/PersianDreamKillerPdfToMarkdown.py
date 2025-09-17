@@ -1,8 +1,6 @@
 import pypdfium2 as pdfium
 import re
 import os
-import sys
-import argparse
 from pathlib import Path
 
 def create_directory(directory_path):
@@ -14,8 +12,17 @@ def create_directory(directory_path):
         print(f"Error creating directory: {e}")
         return False
 
-def extract_persian_pages_to_markdown(pdf_path, output_dir_path):
+
+def extract_persian_pages_to_markdown():
     try:
+        # Read PDF file path from input.txt
+        with open('input.txt', 'r', encoding='utf-8') as f:
+            pdf_path = f.read().strip()
+        
+        # Read output directory path from output.txt
+        with open('output.txt', 'r', encoding='utf-8') as f:
+            output_dir_path = f.read().strip()
+
         if not os.path.exists(pdf_path):
             print(f"PDF file not found: {pdf_path}")
             return False
@@ -38,8 +45,7 @@ def extract_persian_pages_to_markdown(pdf_path, output_dir_path):
         for i in range(total_pages):
             page = pdf[i]
             textpage = page.get_textpage()
-            # text = textpage.get_text_range()
-            text = textpage.get_text_bounded()
+            text = textpage.get_text_range()
             
             # Process text for better Markdown formatting
             processed_text = process_text_for_markdown(text)
@@ -80,6 +86,9 @@ def extract_persian_pages_to_markdown(pdf_path, output_dir_path):
         print(f"Extraction completed. Files saved in: {output_dir}")
         return True
         
+    except FileNotFoundError:
+        print("Error: input.txt or output.txt file not found")
+        return False
     except Exception as e:
         print(f"Error processing file: {e}")
         return False
@@ -102,18 +111,8 @@ def process_text_for_markdown(text):
     
     return '\n\n'.join(processed_lines)
 
-def main():
-    parser = argparse.ArgumentParser(description='Extract Persian text from PDF to Markdown files')
-    parser.add_argument('--input', required=True, help='Path to the input PDF file')
-    parser.add_argument('--output_path', required=True, help='Path to the output directory')
-    
-    args = parser.parse_args()
-    
-    success = extract_persian_pages_to_markdown(args.input, args.output_path)
-    if not success:
-        print("Extraction failed. Please check the error messages.")
-        sys.exit(1)
-
 # Run the function
 if __name__ == "__main__":
-    main()
+    success = extract_persian_pages_to_markdown()
+    if not success:
+        print("Extraction failed. Please check the error messages.")
