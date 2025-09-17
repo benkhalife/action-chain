@@ -13,25 +13,25 @@ def create_directory(directory_path):
         return False
 
 
-
 def extract_persian_pages_to_markdown():
     try:
         # Read PDF file path from input.txt
         with open('input.txt', 'r', encoding='utf-8') as f:
             pdf_path = f.read().strip()
         
+        # Read output directory path from output.txt
         with open('output.txt', 'r', encoding='utf-8') as f:
-            pdf_output_path = f.read().strip()
+            output_dir_path = f.read().strip()
 
         if not os.path.exists(pdf_path):
             print(f"PDF file not found: {pdf_path}")
             return False
         
-        # Create output directory
-        pdf_name = Path(pdf_path).stem
-        output_dir = Path("output") / pdf_name 
-        output_dir.mkdir(parents=True, exist_ok=True)
+        # Create or use the given output directory
+        Path(output_dir_path).mkdir(parents=True, exist_ok=True)
 
+        pdf_name = Path(pdf_path).stem
+        output_dir = Path(output_dir_path) / pdf_name 
         if not create_directory(output_dir / "pages"):
             return False
         
@@ -71,7 +71,7 @@ def extract_persian_pages_to_markdown():
         with open(combined_file_path, 'w', encoding='utf-8') as combined_f:
             for i in range(total_pages):
                 page_filename = f"page_{i+1}.md"
-                page_file_path = output_dir / "pages" / page_filename
+                page_file_path = (output_dir / "pages") / page_filename
                 
                 # Read content of each page file
                 with open(page_file_path, 'r', encoding='utf-8') as page_f:
@@ -87,7 +87,7 @@ def extract_persian_pages_to_markdown():
         return True
         
     except FileNotFoundError:
-        print("Error: input.txt file not found")
+        print("Error: input.txt or output.txt file not found")
         return False
     except Exception as e:
         print(f"Error processing file: {e}")
