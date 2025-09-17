@@ -1,0 +1,21 @@
+# Ignore all PDF files
+*.pdf
+
+# Ignore image files (common extensions)
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.svg
+*.webp
+*.tiff
+
+# Ignore all Markdown files except README.md
+*.md
+!README.md
+
+# Optional: Ignore specific image directories
+# images/
+# assets/
+venv/
