@@ -2,11 +2,12 @@
 """
 PDF Pages to Images Converter
 Converts each page of a PDF file into high-quality images.
-Reads PDF path from input.txt and saves images to output directory.
+Reads PDF path from command line arguments and saves images to output directory.
 """
 
 import os
 import sys
+import argparse
 from pathlib import Path
 import fitz  # PyMuPDF
 from PIL import Image
@@ -17,29 +18,20 @@ import logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-def read_pdf_path():
-    """Read PDF file path from input.txt"""
-    input_file = Path("input.txt")
+def parse_arguments():
+    """Parse command line arguments"""
+    parser = argparse.ArgumentParser(description='Convert PDF pages to images')
+    parser.add_argument('--input', required=True, help='Path to the input PDF file')
+    parser.add_argument('--output_path', required=True, help='Path to the output directory')
+    parser.add_argument('--quality', choices=['1', '2', '3', '4'], default='1', 
+                       help='Quality option: 1=High (300 DPI PNG), 2=Medium (200 DPI JPEG), 3=Web (150 DPI JPEG), 4=All qualities')
     
-    if not input_file.exists():
-        raise FileNotFoundError("input.txt file not found. Please create it with the PDF file path.")
-    
-    with open(input_file, 'r', encoding='utf-8') as f:
-        pdf_path = f.read().strip()
-    
-    if not pdf_path:
-        raise ValueError("input.txt is empty. Please add the PDF file path.")
-    
-    pdf_path = Path(pdf_path)
-    if not pdf_path.exists():
-        raise FileNotFoundError(f"PDF file not found: {pdf_path}")
-    
-    return pdf_path
+    return parser.parse_args()
 
-def create_output_directory(pdf_path):
+def create_output_directory(pdf_path, output_path):
     """Create output directory for page images"""
     pdf_name = pdf_path.stem  # filename without extension
-    output_dir = Path("output") / pdf_name / "images/pages"
+    output_dir = Path(output_path) / pdf_name / "images/pages"
     output_dir.mkdir(parents=True, exist_ok=True)
     return output_dir
 
@@ -157,9 +149,18 @@ def get_pdf_info(pdf_path):
 def main():
     """Main conversion process"""
     try:
-        # Read PDF path from input.txt
-        pdf_path = read_pdf_path()
+        # Parse command line arguments
+        args = parse_arguments()
+        
+        pdf_path = Path(args.input)
+        output_path = Path(args.output_path)
+        quality_choice = args.quality
+        
+        if not pdf_path.exists():
+            raise FileNotFoundError(f"PDF file not found: {pdf_path}")
+        
         logger.info(f"Processing PDF: {pdf_path}")
+        logger.info(f"Output path: {output_path}")
         
         # Get PDF information
         pdf_info = get_pdf_info(pdf_path)
@@ -168,24 +169,10 @@ def main():
             logger.info(f"Title: {pdf_info['title']}")
         
         # Create output directory
-        output_dir = create_output_directory(pdf_path)
+        output_dir = create_output_directory(pdf_path, output_path)
         logger.info(f"Output directory: {output_dir}")
         
-        # Ask user for conversion preference (default to high quality single conversion)
-        print("\nConversion options:")
-        print("1. High quality (300 DPI PNG) - Recommended")
-        print("2. Medium quality (200 DPI JPEG)")
-        print("3. Web quality (150 DPI JPEG)")
-        print("4. All qualities (creates separate folders)")
-        
-        try:
-            choice = input("\nChoose option (1-4, default=1): ").strip()
-            if not choice:
-                choice = '1'
-        except (EOFError, KeyboardInterrupt):
-            choice = '1'
-        
-        if choice == '4':
+        if quality_choice == '4':
             # Convert with all quality presets
             results = batch_convert_with_different_qualities(pdf_path, output_dir)
             
@@ -204,7 +191,7 @@ def main():
                 '3': {'dpi': 150, 'format': 'JPEG', 'name': 'Web'}
             }
             
-            settings = quality_settings.get(choice, quality_settings['1'])
+            settings = quality_settings.get(quality_choice, quality_settings['1'])
             
             logger.info(f"Selected: {settings['name']} quality ({settings['dpi']} DPI {settings['format']})")
             

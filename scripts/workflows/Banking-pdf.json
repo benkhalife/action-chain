@@ -1,0 +1,16 @@
+{
+    "chain": [
+        {
+            "app": "PersianDreamKillerPdfToMarkdown.py",
+            "path": "/var/www/html/benchain/scripts/pdf_to_text",
+            "input_file": "/var/www/html/benchain/input/pdf_db/Kaplan.pdf",
+            "output_file": "/var/www/html/benchain/output/pdf/"
+        },
+        {
+            "app": "NithImageExtract.py",
+            "path": "/var/www/html/benchain/scripts/pdf_extract_images",
+            "input_file": "/var/www/html/benchain/input/pdf_db/Kaplan.pdf",
+            "output_file": "/var/www/html/benchain/output/pdf/"
+        }
+    ]
+}

@@ -71,13 +71,19 @@ def run_chain(workflow_file):
                 print("Output:")
                 print(result.stdout)
                 if result.stderr:
-                    print("Errors:")
+                    print("Logs:")  # تغییر از "Errors" به "Logs"
                     print(result.stderr)
+                
+                # بررسی کد خروجی به جای وجود stderr
+                if result.returncode != 0:
+                    print(f"Error executing step {i+1}: Return code {result.returncode}")
+                    return False
                 
                 print(f"Step {i+1} completed successfully")
                 
             except subprocess.CalledProcessError as e:
                 print(f"Error executing step {i+1}: {e}")
+                print(f"STDOUT: {e.stdout}")
                 print(f"STDERR: {e.stderr}")
                 return False
             except Exception as e:

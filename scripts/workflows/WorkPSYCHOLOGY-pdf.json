@@ -1,0 +1,22 @@
+{
+    "chain": [
+        {
+            "app": "PersianDreamKillerPdfToMarkdown.py",
+            "path": "/var/www/html/benchain/scripts/pdf_to_text",
+            "input_file": "/var/www/html/benchain/input/pdf_db/WORK PSYCHOLOGY.pdf",
+            "output_file": "/var/www/html/benchain/output/pdf/"
+        },
+        {
+            "app": "NithImageExtract.py",
+            "path": "/var/www/html/benchain/scripts/pdf_extract_images",
+            "input_file": "/var/www/html/benchain/input/pdf_db/WORK PSYCHOLOGY.pdf",
+            "output_file": "/var/www/html/benchain/output/pdf/"
+        },
+        {
+            "app": "PdfToImageConvertor.py",
+            "path": "/var/www/html/benchain/scripts/pdf_to_images",
+            "input_file": "/var/www/html/benchain/input/pdf_db/WORK PSYCHOLOGY.pdf",
+            "output_file": "/var/www/html/benchain/output/pdf/"
+        }
+    ]
+}
